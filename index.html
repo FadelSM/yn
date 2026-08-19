@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tabel Geometri Molekul</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            width: 100%;
+            max-width: 1100px;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-weight: 600;
+            font-size: 22px;
+            color: #1e293b;
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            font-size: 14px;
+            min-width: 700px;
+        }
+
+        thead {
+            background: #1e293b;
+            color: white;
+        }
+
+        thead th {
+            padding: 14px 12px;
+            text-align: center;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            font-size: 13px;
+            border-right: 1px solid #334155;
+        }
+
+        thead th:last-child {
+            border-right: none;
+        }
+
+        tbody tr {
+            transition: background 0.15s ease;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        tbody tr:hover {
+            background: #e9edf2;
+        }
+
+        tbody td {
+            padding: 12px 10px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            vertical-align: middle;
+            color: #0f172a;
+        }
+
+        tbody td:last-child {
+            border-right: none;
+        }
+
+        /* Kolom khusus */
+        .col-domain {
+            font-weight: 600;
+            color: #0b3b5c;
+        }
+
+        .col-pei,
+        .col-peb {
+            font-weight: 500;
+        }
+
+        .col-tipe {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: #0b3b5c;
+            background: #f1f5f9;
+            border-radius: 6px;
+            padding: 2px 6px;
+            display: inline-block;
+        }
+
+        .col-geometri {
+            font-weight: 500;
+            color: #1e293b;
+        }
+
+        .col-sudut {
+            font-weight: 500;
+            color: #0f172a;
+        }
+
+        /* Kolom Gambar (placeholder) */
+        .col-gambar {
+            background: #f1f5f9;
+            min-width: 70px;
+            font-size: 12px;
+            color: #64748b;
+            font-style: italic;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            table {
+                font-size: 12px;
+                min-width: 600px;
+            }
+            thead th,
+            tbody td {
+                padding: 8px 6px;
+            }
+        }
+
+        /* Simbol sudut dan format */
+        .sudut-badge {
+            background: #eef2ff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: inline-block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1e3a8a;
+        }
+
+        /* Efek untuk tipe AX */
+        .ax-code {
+            background: #dbeafe;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: #1e40af;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📐 Tabel Geometri Molekul (VSEPR)</h1>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Domain</th>
+                        <th>PEI</th>
+                        <th>PEB</th>
+                        <th>Tipe</th>
+                        <th>Geometri</th>
+                        <th>Sudut Ikatan</th>
+                        <th>Gambar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data sesuai gambar -->
+                    <tr>
+                        <td class="col-domain">2</td>
+                        <td class="col-pei">2</td>
+                        <td class="col-peb">0</td>
+                        <td><span class="ax-code">AX₂</span></td>
+                        <td class="col-geometri">Linear</td>
+                        <td class="col-sudut"><span class="sudut-badge">180°</span></td>
+                        <td class="col-gambar">—</td>
+                    </tr>
+                    <tr>
+                        <td class="col-domain">3</td>
+                        <td class="col-pei">3</td>
+                        <td class="col-peb">0</td>
+                        <td><span class="ax-code">AX₃</span></td>
+                        <td class="col-geometri">Trigonal Planar</td>
+                        <td class="col-sudut"><span class="sudut-badge">120°</span></td>
+                        <td class="col-gambar">—</td>
+                    </tr>
+                    <tr>
+                        <td class="col-domain">4</td>
+                        <td class="col-pei">2</td>
+                        <td class="col-peb">1</td>
+                        <td><span class="ax-code">AX₂E</span></td>
+                        <td class="col-geometri">Bentuk V</td>
+                        <td class="col-sudut"><span class="sudut-badge">&lt;120°</span></td>
+                        <td class="col-gambar">—</td>
+                    </tr>
+                    <tr>
+                        <td class="col-domain">4</td>
+                        <td class="col-pei">4</td>
+                        <td class="col-peb">0</td>
+                        <td><span class="ax-code">AX₄</span></td>
+                        <td class="col-geometri">Tetrahedral</td>
+                        <td class="col-sudut"><span class="sudut-badge">109,5°</span></td>
+                        <td class="col-gambar">—</td>
+                    </tr>
+                    <tr>
+                        <td class="col-domain">4</td>
+                        <td class="col-pei">3</td>
+                        <td class="col-peb">1</td>
+                        <td><span class="ax-code">AX₃E</span></td>
+                        <td class="col-geometri">Trigonal Piramida</td>
+                        <td class="col-sudut"><span class="sudut-badge">&lt;109,5°</span></td>
+                        <td class="col-gambar">—</td>
+                    </tr>
+                    <tr>
+                        <td class="col-domain">4</td>
+                        <td class="col-pei">2</td>
+                        <td class="col-peb">2</td>
+                        <td><span class="ax-code">AX₂E₂</span></td>
+                        <td class="col-geometri">Bentuk V</td>
+                        <td class="col-sudut"><span class="sudut-badge">&lt;109,5°</span></td>
+                        <td class="col-gambar">—</td>
+                    </tr>
+                    <tr>
+                        <td class="col-domain">5</td>
+                        <td class="col-pei">5</td>
+                        <td class="col-peb">0</td>
+                        <td><span class="ax-code">AX₅</span></td>
+                        <td class="col-geometri">Trigonal Bipiramida</td>
+                        <td class="col-sudut"><span class="sudut-badge">90°, 120°, 180°</span></td>
+                        <td class="col-gambar">—</td>
+                    </tr>
+                    <tr>
+                        <td class="col-domain">5</td>
+                        <td class="col-pei">4</td>
+                        <td class="col-peb">1</td>
+                        <td><span class="ax-code">AX₄E</span></td>
+                        <td class="col-geometri">Tetrahedral Terdistorsi</td>
+                        <td class="col-sudut"><span class="sudut-badge">90°, &lt;120°, &lt;180°</span></td>
+                        <td class="col-gambar">—</td>
+                    </tr>
+                    <tr>
+                        <td class="col-domain">5</td>
+                        <td class="col-pei">3</td>
+                        <td class="col-peb">2</td>
+                        <td><span class="ax-code">AX₃E₂</span></td>
+                        <td class="col-geometri">Bentuk T</td>
+                        <td class="col-sudut"><span class="sudut-badge">&lt;90°, &lt;180°</span></td>
+                        <td class="col-gambar">—</td>
+                    </tr>
+                    <tr>
+                        <td class="col-domain">5</td>
+                        <td class="col-pei">2</td>
+                        <td class="col-peb">3</td>
+                        <td><span class="ax-code">AX₂E₃</span></td>
+                        <td class="col-geometri">Linear</td>
+                        <td class="col-sudut"><span class="sudut-badge">180°</span></td>
+                        <td class="col-gambar">—</td>
+                    </tr>
+                    <tr>
+                        <td class="col-domain">6</td>
+                        <td class="col-pei">6</td>
+                        <td class="col-peb">0</td>
+                        <td><span class="ax-code">AX₆</span></td>
+                        <td class="col-geometri">Oktahedral</td>
+                        <td class="col-sudut"><span class="sudut-badge">90°, 180°</span></td>
+                        <td class="col-gambar">—</td>
+                    </tr>
+                    <tr>
+                        <td class="col-domain">6</td>
+                        <td class="col-pei">5</td>
+                        <td class="col-peb">1</td>
+                        <td><span class="ax-code">AX₅E</span></td>
+                        <td class="col-geometri">Segiempat Piramida</td>
+                        <td class="col-sudut"><span class="sudut-badge">&lt;90°</span></td>
+                        <td class="col-gambar">—</td>
+                    </tr>
+                    <tr>
+                        <td class="col-domain">6</td>
+                        <td class="col-pei">4</td>
+                        <td class="col-peb">2</td>
+                        <td><span class="ax-code">AX₄E₂</span></td>
+                        <td class="col-geometri">Segiempat Datar</td>
+                        <td class="col-sudut"><span class="sudut-badge">90°</span></td>
+                        <td class="col-gambar">—</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p style="text-align: right; font-size: 12px; color: #94a3b8; margin-top: 12px; padding-right: 8px;">
+            Berdasarkan teori VSEPR
+        </p>
+    </div>
+</body>
+</html>

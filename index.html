@@ -1,321 +1,497 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tabel Geometri Molekul</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="img/KSYA.ID Logo.png">
+<title>QR Generator - KSYA.ID</title>
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f4f8;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            overflow: hidden;
-            width: 100%;
-            max-width: 1100px;
-            padding: 20px;
-        }
-
-        h1 {
-            text-align: center;
-            font-weight: 600;
-            font-size: 22px;
-            color: #1e293b;
-            margin-bottom: 16px;
-            letter-spacing: 0.5px;
-        }
-
-        .table-wrapper {
-            overflow-x: auto;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            font-size: 14px;
-            min-width: 700px;
-        }
-
-        thead {
-            background: #1e293b;
-            color: white;
-        }
-
-        thead th {
-            padding: 14px 12px;
-            text-align: center;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-            text-transform: uppercase;
-            font-size: 13px;
-            border-right: 1px solid #334155;
-        }
-
-        thead th:last-child {
-            border-right: none;
-        }
-
-        tbody tr {
-            transition: background 0.15s ease;
-        }
-
-        tbody tr:nth-child(even) {
-            background: #f8fafc;
-        }
-
-        tbody tr:hover {
-            background: #e9edf2;
-        }
-
-        tbody td {
-            padding: 12px 10px;
-            text-align: center;
-            border-bottom: 1px solid #e2e8f0;
-            border-right: 1px solid #e2e8f0;
-            vertical-align: middle;
-            color: #0f172a;
-        }
-
-        tbody td:last-child {
-            border-right: none;
-        }
-
-        /* Kolom khusus */
-        .col-domain {
-            font-weight: 600;
-            color: #0b3b5c;
-        }
-
-        .col-pei,
-        .col-peb {
-            font-weight: 500;
-        }
-
-        .col-tipe {
-            font-family: 'Courier New', monospace;
-            font-weight: 600;
-            color: #0b3b5c;
-            background: #f1f5f9;
-            border-radius: 6px;
-            padding: 2px 6px;
-            display: inline-block;
-        }
-
-        .col-geometri {
-            font-weight: 500;
-            color: #1e293b;
-        }
-
-        .col-sudut {
-            font-weight: 500;
-            color: #0f172a;
-        }
-
-        /* Kolom Gambar (placeholder) */
-        .col-gambar {
-            background: #f1f5f9;
-            min-width: 70px;
-            font-size: 12px;
-            color: #64748b;
-            font-style: italic;
-        }
-
-        /* Responsive */
-        @media (max-width: 600px) {
-            .container {
-                padding: 10px;
-            }
-            table {
-                font-size: 12px;
-                min-width: 600px;
-            }
-            thead th,
-            tbody td {
-                padding: 8px 6px;
-            }
-        }
-
-        /* Simbol sudut dan format */
-        .sudut-badge {
-            background: #eef2ff;
-            padding: 2px 8px;
-            border-radius: 12px;
-            display: inline-block;
-            font-size: 13px;
-            font-weight: 500;
-            color: #1e3a8a;
-        }
-
-        /* Efek untuk tipe AX */
-        .ax-code {
-            background: #dbeafe;
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-weight: 600;
-            color: #1e40af;
-            font-size: 13px;
-        }
-    </style>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/qr-code-styling/lib/qr-code-styling.js"></script>
 </head>
+
 <body>
-    <div class="container">
-        <h1>📐 Tabel Geometri Molekul (VSEPR)</h1>
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Domain</th>
-                        <th>PEI</th>
-                        <th>PEB</th>
-                        <th>Tipe</th>
-                        <th>Geometri</th>
-                        <th>Sudut Ikatan</th>
-                        <th>Gambar</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Data sesuai gambar -->
-                    <tr>
-                        <td class="col-domain">2</td>
-                        <td class="col-pei">2</td>
-                        <td class="col-peb">0</td>
-                        <td><span class="ax-code">AX₂</span></td>
-                        <td class="col-geometri">Linear</td>
-                        <td class="col-sudut"><span class="sudut-badge">180°</span></td>
-                        <td class="col-gambar">—</td>
-                    </tr>
-                    <tr>
-                        <td class="col-domain">3</td>
-                        <td class="col-pei">3</td>
-                        <td class="col-peb">0</td>
-                        <td><span class="ax-code">AX₃</span></td>
-                        <td class="col-geometri">Trigonal Planar</td>
-                        <td class="col-sudut"><span class="sudut-badge">120°</span></td>
-                        <td class="col-gambar">—</td>
-                    </tr>
-                    <tr>
-                        <td class="col-domain">4</td>
-                        <td class="col-pei">2</td>
-                        <td class="col-peb">1</td>
-                        <td><span class="ax-code">AX₂E</span></td>
-                        <td class="col-geometri">Bentuk V</td>
-                        <td class="col-sudut"><span class="sudut-badge">&lt;120°</span></td>
-                        <td class="col-gambar">—</td>
-                    </tr>
-                    <tr>
-                        <td class="col-domain">4</td>
-                        <td class="col-pei">4</td>
-                        <td class="col-peb">0</td>
-                        <td><span class="ax-code">AX₄</span></td>
-                        <td class="col-geometri">Tetrahedral</td>
-                        <td class="col-sudut"><span class="sudut-badge">109,5°</span></td>
-                        <td class="col-gambar">—</td>
-                    </tr>
-                    <tr>
-                        <td class="col-domain">4</td>
-                        <td class="col-pei">3</td>
-                        <td class="col-peb">1</td>
-                        <td><span class="ax-code">AX₃E</span></td>
-                        <td class="col-geometri">Trigonal Piramida</td>
-                        <td class="col-sudut"><span class="sudut-badge">&lt;109,5°</span></td>
-                        <td class="col-gambar">—</td>
-                    </tr>
-                    <tr>
-                        <td class="col-domain">4</td>
-                        <td class="col-pei">2</td>
-                        <td class="col-peb">2</td>
-                        <td><span class="ax-code">AX₂E₂</span></td>
-                        <td class="col-geometri">Bentuk V</td>
-                        <td class="col-sudut"><span class="sudut-badge">&lt;109,5°</span></td>
-                        <td class="col-gambar">—</td>
-                    </tr>
-                    <tr>
-                        <td class="col-domain">5</td>
-                        <td class="col-pei">5</td>
-                        <td class="col-peb">0</td>
-                        <td><span class="ax-code">AX₅</span></td>
-                        <td class="col-geometri">Trigonal Bipiramida</td>
-                        <td class="col-sudut"><span class="sudut-badge">90°, 120°, 180°</span></td>
-                        <td class="col-gambar">—</td>
-                    </tr>
-                    <tr>
-                        <td class="col-domain">5</td>
-                        <td class="col-pei">4</td>
-                        <td class="col-peb">1</td>
-                        <td><span class="ax-code">AX₄E</span></td>
-                        <td class="col-geometri">Tetrahedral Terdistorsi</td>
-                        <td class="col-sudut"><span class="sudut-badge">90°, &lt;120°, &lt;180°</span></td>
-                        <td class="col-gambar">—</td>
-                    </tr>
-                    <tr>
-                        <td class="col-domain">5</td>
-                        <td class="col-pei">3</td>
-                        <td class="col-peb">2</td>
-                        <td><span class="ax-code">AX₃E₂</span></td>
-                        <td class="col-geometri">Bentuk T</td>
-                        <td class="col-sudut"><span class="sudut-badge">&lt;90°, &lt;180°</span></td>
-                        <td class="col-gambar">—</td>
-                    </tr>
-                    <tr>
-                        <td class="col-domain">5</td>
-                        <td class="col-pei">2</td>
-                        <td class="col-peb">3</td>
-                        <td><span class="ax-code">AX₂E₃</span></td>
-                        <td class="col-geometri">Linear</td>
-                        <td class="col-sudut"><span class="sudut-badge">180°</span></td>
-                        <td class="col-gambar">—</td>
-                    </tr>
-                    <tr>
-                        <td class="col-domain">6</td>
-                        <td class="col-pei">6</td>
-                        <td class="col-peb">0</td>
-                        <td><span class="ax-code">AX₆</span></td>
-                        <td class="col-geometri">Oktahedral</td>
-                        <td class="col-sudut"><span class="sudut-badge">90°, 180°</span></td>
-                        <td class="col-gambar">—</td>
-                    </tr>
-                    <tr>
-                        <td class="col-domain">6</td>
-                        <td class="col-pei">5</td>
-                        <td class="col-peb">1</td>
-                        <td><span class="ax-code">AX₅E</span></td>
-                        <td class="col-geometri">Segiempat Piramida</td>
-                        <td class="col-sudut"><span class="sudut-badge">&lt;90°</span></td>
-                        <td class="col-gambar">—</td>
-                    </tr>
-                    <tr>
-                        <td class="col-domain">6</td>
-                        <td class="col-pei">4</td>
-                        <td class="col-peb">2</td>
-                        <td><span class="ax-code">AX₄E₂</span></td>
-                        <td class="col-geometri">Segiempat Datar</td>
-                        <td class="col-sudut"><span class="sudut-badge">90°</span></td>
-                        <td class="col-gambar">—</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <p style="text-align: right; font-size: 12px; color: #94a3b8; margin-top: 12px; padding-right: 8px;">
-            Berdasarkan teori VSEPR
-        </p>
+<div class="container">
+
+<h2>QR Generator By KSYA.ID</h2>
+
+<div class="main">
+
+    <!-- KIRI -->
+<div class="left">
+
+    <input id="text" placeholder="Masukkan link / teks">
+
+<div class="help-box">
+    <div class="help-title-col">Gunakan link media sosial/teks biasa atau format yang didukung</div>
+
+    <div class="help-body-col">
+
+    <div class="help-row">
+        <span class="help-title">WhatsApp</span>
+
+        <span class="help-text">
+            Gunakan 
+            <code>
+                https://wa.me/
+                <span class="info-tooltip">
+                    (Kode Negara)
+                    <span class="tooltip-box">
+                        Contoh Indonesia: 62 <br>
+                        Jadi: 628xxxxxxxxxx
+                    </span>
+                </span>
+                8xxxxxxxxxx
+            </code>
+        </span>
     </div>
+
+        <div class="help-row">
+            <span class="help-title">Instagram</span>
+            <span class="help-text">
+                Gunakan "@username"
+            </span>
+        </div>
+
+        <div class="help-row">
+            <span class="help-title">TikTok</span>
+            <span class="help-text">
+                Gunakan link VT
+            </span>
+        </div>
+
+    </div>
+</div>
+
+    <input id="labelText" placeholder="Contoh: SCAN ME">
+
+    <select id="style">
+        <option value="square">Kotak</option>
+        <option value="dots">Bulat</option>
+    </select>
+
+    <!-- Pilih Logo -->
+    <label class="upload-box">
+    <input type="file" id="logo" hidden onchange="showFileName(this)">
+    <div id="fileName" class="file-name">Belum ada file</div>
+</label>
+
+
+   <div class="btn-group">
+    <button class="btn-download" onclick="download()">Download</button>
+    <button class="btn-save" onclick="saveCurrent()">Save</button>
+</div>
+
+
+
+</div>
+
+    <!-- KANAN -->
+    <div class="right">
+    <div id="qr">
+        <div class="placeholder">QR muncul di sini</div>
+    </div>
+
+    <div class="complexity-box">
+    <div id="complexityText">Complexity: -</div>
+    <div class="bar">
+        <div id="barFill"></div>
+    </div>
+</div>
+
+    <button class="btn-history" onclick="toggleHistory()">Riwayat QR</button>
+</div>
+
+</div>
+
+<div class="history">
+<h3>Riwayat QR</h3>
+<div id="historyList"></div>
+
+</div>
+
+</div>
+
+<script>
+let qr;
+
+function detectType(text) {
+
+    // WhatsApp
+    if (
+        /^\d+$/.test(text) ||
+        text.includes("wa.me") ||
+        text.includes("whatsapp.com")
+    ) {
+        return "wa";
+    }
+
+    // Instagram
+    if (
+        text.includes("instagram.com") ||
+        text.startsWith("@")
+    ) {
+        return "ig";
+    }
+
+    // TikTok
+    if (
+        text.includes("tiktok.com") ||
+        text.includes("vt.tiktok.com")
+    ) {
+        return "tiktok";
+    }
+
+    return "default";
+}
+
+function autoFormat(text) {
+
+    // Nomor otomatis jadi link WA
+    if (/^\d+$/.test(text)) {
+        return "https://wa.me/" + text;
+    }
+
+    // @username otomatis jadi IG
+    if (text.startsWith("@")) {
+        return "https://instagram.com/" + text.replace("@", "");
+    }
+
+    return text;
+}
+
+function getAutoLogo(type) {
+    if (type === "wa") return "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg";
+    if (type === "ig") return "https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png";
+    if (type === "tiktok") return "https://upload.wikimedia.org/wikipedia/en/a/a9/TikTok_logo.svg";
+    return "";
+}
+
+function generate() {
+    let text = document.getElementById("text").value.trim(); //
+    const style = document.getElementById("style").value;
+    const userLogo = document.getElementById("logo").files[0];
+    const label = document.getElementById("labelText").value;
+
+    const qrContainer = document.getElementById("qr");
+
+    //kalau kosong → reset QR
+    if (!text) {
+    qrContainer.innerHTML = '<div class="placeholder">QR muncul di sini</div>';
+    updateComplexity("");
+    qr = null;
+
+    showAlert("QR dihapus", "error"); // 🔥 ini animasi hapus
+    return;
+
+    }
+
+    const rawText = text;
+    const type = detectType(text);
+    text = autoFormat(text);
+
+    let imageURL = userLogo 
+        ? URL.createObjectURL(userLogo) 
+        : getAutoLogo(type);
+
+    qrContainer.innerHTML = "";
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "qr-wrapper";
+
+    const qrBox = document.createElement("div");
+
+    qr = new QRCodeStyling({
+        width: 300,
+        height: 300,
+        data: text,
+        image: imageURL,
+        qrOptions: { errorCorrectionLevel: "H" },
+        dotsOptions: { type: style, color: "#000000" },
+        backgroundOptions: { color: "#ffffff" },
+        imageOptions: { crossOrigin: "anonymous", margin: 8 }
+    });
+
+    updateComplexity(rawText);
+
+    qr.append(qrBox);
+    wrapper.appendChild(qrBox);
+
+    if (label) {
+        const labelEl = document.createElement("div");
+        labelEl.className = "qr-label";
+        labelEl.innerText = label;
+        wrapper.appendChild(labelEl);
+    }
+
+    qrContainer.appendChild(wrapper);
+}
+
+function saveCurrent() {
+    let text = document.getElementById("text").value.trim();
+    let label = document.getElementById("labelText").value;
+
+    if (!text) return showAlert("Isi dulu sebelum save!", "error");
+
+    const canvas = document.querySelector("#qr canvas");
+    if (!canvas) return showAlert("Generate dulu QR nya!", "error");
+
+    const image = canvas.toDataURL();
+
+    saveHistory(text, label, image);
+    showAlert("Berhasil disimpan!");
+}
+
+function download() {
+    const canvas = document.querySelector("#qr canvas"); // 🔥 ambil QR
+
+    if (!canvas) {
+    showAlert("Generate dulu QR nya!", "error");
+    return;
+}
+
+    showAlert("QR berhasil di download!");
+
+    const label = document.getElementById("labelText").value;
+    const text = document.getElementById("text").value;
+    const padding = 30;
+    const radius = 20;
+    const extraHeight = label ? 70 : 20;
+
+    const newCanvas = document.createElement("canvas");
+    const ctx = newCanvas.getContext("2d");
+
+    newCanvas.width = canvas.width + padding * 2;
+    newCanvas.height = canvas.height + padding * 2 + extraHeight;
+
+    function roundRect(x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
+    }
+
+    // frame
+    ctx.fillStyle = "#ffffff";
+    roundRect(0, 0, newCanvas.width, newCanvas.height, radius);
+    ctx.fill();
+
+    ctx.drawImage(canvas, padding, padding);
+
+    if (label) {
+        ctx.font = "bold 16px sans-serif";
+        ctx.fillStyle = "#111";
+        ctx.textAlign = "center";
+        ctx.fillText(label, newCanvas.width/2, canvas.height + padding + 30);
+    }
+
+    let fileName = label || text || "QR-Code";
+    fileName = fileName.replace(/[^a-z0-9]/gi, "_").toLowerCase();
+
+    const link = document.createElement("a");
+    link.download = fileName + ".png";
+    link.href = newCanvas.toDataURL();
+    link.click();
+}
+
+// Tampilkan nama file yang dipilih
+function showFileName(input) {
+    const fileText = document.getElementById("fileName");
+
+    if (input.files.length > 0) {
+        fileText.innerText = input.files[0].name;
+    } else {
+        fileText.innerText = "Belum ada file";
+    }
+}
+
+// Input 
+document.getElementById("text").addEventListener("input", generate);
+document.getElementById("labelText").addEventListener("input", generate);
+document.getElementById("style").addEventListener("change", generate);
+document.getElementById("logo").addEventListener("change", generate);
+
+// History
+function saveHistory(text, label, image) {
+    let history = JSON.parse(localStorage.getItem("qrHistory")) || [];
+
+    history.unshift({ text, label, image });
+
+    //Batas history
+    history = history.slice(0, 5);
+
+    localStorage.setItem("qrHistory", JSON.stringify(history));
+
+    renderHistory();
+}
+
+function renderHistory() {
+    const history = JSON.parse(localStorage.getItem("qrHistory")) || [];
+    const container = document.getElementById("historyList");
+
+    container.innerHTML = "";
+
+    history.forEach((item, index) => {
+        const box = document.createElement("div");
+        box.className = "history-item";
+
+        // Thumbnail QR (gambar)
+        const img = document.createElement("img");
+        img.src = item.image || "";
+        img.style.width = "80px";
+        img.style.borderRadius = "10px";
+
+        box.appendChild(img);
+
+        // label
+        const label = document.createElement("div");
+        label.className = "history-label";
+        label.innerText = item.label || "QR";
+
+        // tombol hapus
+        const delBtn = document.createElement("div");
+        delBtn.className = "delete-btn";
+        delBtn.innerText = "✕";
+
+        delBtn.onclick = (e) => {
+            e.stopPropagation(); // biar ga ikut klik QR
+            deleteHistory(index);
+        };
+
+        box.appendChild(delBtn);
+        box.appendChild(img);
+        box.appendChild(label);
+
+        // klik load
+        box.onclick = () => {
+            document.getElementById("text").value = item.text;
+            document.getElementById("labelText").value = item.label;
+            generate();
+        };
+
+        container.appendChild(box);
+    });
+}
+
+function deleteHistory(index) {
+    let history = JSON.parse(localStorage.getItem("qrHistory")) || [];
+
+    history.splice(index, 1);
+
+    localStorage.setItem("qrHistory", JSON.stringify(history));
+
+    renderHistory();
+}
+
+function toggleHistory() {
+    const historyBox = document.querySelector(".history");
+
+    if (historyBox.style.display === "none" || historyBox.style.display === "") {
+        historyBox.style.display = "block";
+    } else {
+        historyBox.style.display = "none";
+    }
+}
+
+function createQR(text, style, imageURL, label) {
+    const qrContainer = document.getElementById("qr");
+    qrContainer.innerHTML = "";
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "qr-wrapper";
+
+    const qrBox = document.createElement("div");
+
+    qr = new QRCodeStyling({
+        width: 300,
+        height: 300,
+        data: text,
+        image: imageURL,
+        qrOptions: {
+            errorCorrectionLevel: "H"
+        },
+        dotsOptions: {
+            type: style,
+            color: "#000000"
+        },
+        backgroundOptions: {
+            color: "#ffffff"
+        },
+        imageOptions: {
+            crossOrigin: "anonymous",
+            margin: 8
+        }
+    });
+
+    qr.append(qrBox);
+    wrapper.appendChild(qrBox);
+
+    if (label) {
+        const labelEl = document.createElement("div");
+        labelEl.className = "qr-label";
+        labelEl.innerText = label;
+        wrapper.appendChild(labelEl);
+    }
+
+    qrContainer.appendChild(wrapper);
+}
+
+function updateComplexity(text) {
+    const length = text.length;
+
+    let level = "";
+    let percent = 0;
+    let color = "";
+
+    if (length === 0) {
+        level = "-";
+        percent = 0;
+        color = "#ccc";
+    } else if (length < 30) {
+        level = "Simple (QR bersih)";
+        percent = 25;
+        color = "#22c55e"; // hijau
+    } else if (length < 80) {
+        level = "Medium";
+        percent = 60;
+        color = "#eab308"; // kuning
+    } else {
+        level = "Complex (QR padat, saran menggunakan shortlink)";
+        percent = 100;
+        color = "#ef4444"; // merah
+    }
+
+    document.getElementById("complexityText").innerText = "Complexity: " + level;
+
+    const bar = document.getElementById("barFill");
+    bar.style.width = percent + "%";
+    bar.style.background = "linear-gradient(90deg, #22c55e, #eab308, #ef4444)";
+}
+
+//Alert
+function showAlert(message, type = "success") {
+    const box = document.getElementById("alertBox");
+
+    box.innerText = message;
+    box.className = "alert-box show";
+
+    if (type === "error") box.classList.add("alert-error");
+    else box.classList.add("alert-success");
+
+    setTimeout(() => {
+        box.classList.remove("show");
+    }, 2000);
+}
+</script>
+
+<div id="alertBox" class="alert-box"></div>
+
 </body>
 </html>

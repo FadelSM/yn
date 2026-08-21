@@ -15,7 +15,8 @@
     <button id="generate-btn">Buat QR Code</button>
 
     <div id="qrcode-wrapper" class="hidden">
-      <div id="qrcode"></div>
+      <!-- Menggunakan elemen Canvas langsung agar hasil tajam -->
+      <canvas id="qr-canvas"></canvas>
       <div class="action-buttons">
         <button id="download-btn" class="btn-secondary">Download QR Code</button>
         <button id="copy-btn" class="btn-outline">Salin Gambar</button>
@@ -23,8 +24,8 @@
     </div>
   </div>
 
-  <!-- Library eksternal untuk membuat QR Code -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- Library QRious (Jauh lebih stabil dan tidak bikin gambar rusak) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
   <script src="assets/script.js"></script>
 </body>
 </html>

@@ -3,22 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generator Teks QR Code</title>
-  <link rel="stylesheet" href="assets/style.css">
+  <title>Generator QR Code</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
     <h2>QR Code Generator</h2>
-    <p>Tulis pesan Anda. Saat QR code di-scan dengan Google Lens, teks ini akan langsung muncul.</p>
+    <p>Tulis pesan Anda, buat QR Code, lalu unduh atau salin gambarnya!</p>
     
     <textarea id="text-input" placeholder="Tulis pesan Anda di sini..."></textarea>
     <button id="generate-btn">Buat QR Code</button>
 
-    <div id="qrcode"></div>
+    <div id="qrcode-wrapper" class="hidden">
+      <div id="qrcode"></div>
+      <div class="action-buttons">
+        <button id="download-btn" class="btn-secondary">Download QR Code</button>
+        <button id="copy-btn" class="btn-outline">Salin Gambar</button>
+      </div>
+    </div>
   </div>
 
   <!-- Library eksternal untuk membuat QR Code -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="assets/script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

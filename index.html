@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Generator</title>
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <!-- PAKE LIBRARY YANG LEBIH STABIL -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -26,7 +27,7 @@
             background: white;
             border-radius: 20px;
             padding: 40px;
-            max-width: 500px;
+            max-width: 550px;
             width: 100%;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
@@ -130,6 +131,12 @@
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
         }
         
+        #qrcode canvas,
+        #qrcode img {
+            max-width: 100%;
+            height: auto;
+        }
+        
         .qr-actions {
             margin-top: 20px;
             display: flex;
@@ -177,12 +184,21 @@
             color: #ef4444;
             margin-top: 10px;
             font-size: 14px;
+            text-align: center;
         }
         
         .success {
             color: #10b981;
             margin-top: 10px;
             font-size: 14px;
+            text-align: center;
+        }
+        
+        .info-text {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+            text-align: center;
         }
         
         @media (max-width: 480px) {
@@ -201,8 +217,9 @@
         <h1>✨ <span>QR Generator</span></h1>
         
         <div class="input-group">
-            <label>📝 Text atau URL</label>
-            <input type="text" id="textInput" placeholder="https://example.com atau teks apapun...">
+            <label>📝 Masukkan Link atau Teks</label>
+            <input type="text" id="textInput" placeholder="https://google.com atau teks apapun...">
+            <div class="info-text">Contoh: https://google.com atau https://github.com</div>
         </div>
         
         <div class="options">
@@ -217,9 +234,9 @@
         </div>
         
         <div class="options">
-            <div>
+            <div style="grid-column: 1 / -1;">
                 <label>📏 Ukuran: <span id="sizeLabel">256</span>px</label>
-                <input type="range" id="sizeInput" min="128" max="512" value="256" step="8">
+                <input type="range" id="sizeInput" min="128" max="512" value="256" step="8" style="width:100%;">
             </div>
         </div>
         
@@ -245,6 +262,7 @@
             </div>
             
             <div id="message" class="success"></div>
+            <div id="qrText" style="margin-top:10px;font-size:12px;color:#666;word-break:break-all;"></div>
         </div>
     </div>
 
@@ -261,11 +279,20 @@
             const errorDiv = document.getElementById('error');
             const container = document.getElementById('qrContainer');
             
-            // Validasi
+            // VALIDASI: Pastikan ada teks
             if (!text) {
                 errorDiv.textContent = '⚠️ Masukkan teks atau URL dulu!';
                 container.classList.remove('show');
                 return;
+            }
+            
+            // VALIDASI: Pastikan URL valid (opsional)
+            try {
+                // Coba parse URL, kalo bukan URL tetap bisa
+                new URL(text);
+            } catch (e) {
+                // Bukan URL, tapi tetap bisa generate
+                console.log('Bukan URL, generate sebagai teks biasa');
             }
             
             errorDiv.textContent = '';
@@ -274,46 +301,72 @@
             const qrDiv = document.getElementById('qrcode');
             qrDiv.innerHTML = '';
             
-            // Generate QR baru
-            qrCodeInstance = new QRCode(qrDiv, {
-                text: text,
-                width: size,
-                height: size,
-                colorDark: color,
-                colorLight: bgColor,
-                correctLevel: QRCode.CorrectLevel.H
-            });
-            
-            currentQRData = text;
-            container.classList.add('show');
-            
-            // Animasi muncul
-            container.style.animation = 'none';
-            setTimeout(() => {
-                container.style.animation = 'fadeIn 0.5s ease';
-            }, 10);
-            
-            document.getElementById('message').textContent = '✅ QR Code berhasil dibuat!';
+            try {
+                // Generate QR dengan library yang lebih stabil
+                qrCodeInstance = new QRCode(qrDiv, {
+                    text: text,
+                    width: size,
+                    height: size,
+                    colorDark: color,
+                    colorLight: bgColor,
+                    correctLevel: QRCode.CorrectLevel.H // High error correction
+                });
+                
+                currentQRData = text;
+                container.classList.add('show');
+                
+                // Tampilkan teks yang di-QR
+                document.getElementById('qrText').textContent = `📌 Isi QR: ${text}`;
+                document.getElementById('message').textContent = '✅ QR Code berhasil dibuat!';
+                
+                // Animasi muncul
+                container.style.animation = 'none';
+                setTimeout(() => {
+                    container.style.animation = 'fadeIn 0.5s ease';
+                }, 10);
+                
+            } catch (err) {
+                errorDiv.textContent = '❌ Gagal generate QR: ' + err.message;
+                container.classList.remove('show');
+            }
         }
 
         function downloadQR() {
             const canvas = document.querySelector('#qrcode canvas');
-            if (!canvas) return;
+            const img = document.querySelector('#qrcode img');
             
-            const link = document.createElement('a');
-            link.download = `qr-code-${Date.now()}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-            
-            document.getElementById('message').textContent = '✅ QR Code didownload!';
+            if (canvas) {
+                const link = document.createElement('a');
+                link.download = `qr-code-${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                document.getElementById('message').textContent = '✅ QR Code didownload!';
+            } else if (img) {
+                const link = document.createElement('a');
+                link.download = `qr-code-${Date.now()}.png`;
+                link.href = img.src;
+                link.click();
+                document.getElementById('message').textContent = '✅ QR Code didownload!';
+            } else {
+                alert('Tidak ada QR Code untuk didownload!');
+            }
         }
 
         async function copyQR() {
             const canvas = document.querySelector('#qrcode canvas');
-            if (!canvas) return;
+            const img = document.querySelector('#qrcode img');
             
             try {
-                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                let blob;
+                if (canvas) {
+                    blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                } else if (img) {
+                    const response = await fetch(img.src);
+                    blob = await response.blob();
+                } else {
+                    throw new Error('No QR code');
+                }
+                
                 await navigator.clipboard.write([
                     new ClipboardItem({
                         [blob.type]: blob
@@ -327,10 +380,19 @@
 
         async function shareQR() {
             const canvas = document.querySelector('#qrcode canvas');
-            if (!canvas) return;
+            const img = document.querySelector('#qrcode img');
             
             try {
-                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                let blob;
+                if (canvas) {
+                    blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                } else if (img) {
+                    const response = await fetch(img.src);
+                    blob = await response.blob();
+                } else {
+                    throw new Error('No QR code');
+                }
+                
                 const file = new File([blob], 'qr-code.png', { type: 'image/png' });
                 
                 if (navigator.share) {
@@ -359,10 +421,24 @@
             document.getElementById('sizeLabel').textContent = this.value;
         });
 
-        // Auto-generate saat ada perubahan warna
-        document.getElementById('colorInput').addEventListener('change', generateQR);
-        document.getElementById('bgInput').addEventListener('change', generateQR);
-        document.getElementById('sizeInput').addEventListener('change', generateQR);
+        // Auto-generate saat ada perubahan
+        document.getElementById('colorInput').addEventListener('change', function() {
+            if (document.getElementById('textInput').value.trim()) {
+                generateQR();
+            }
+        });
+        
+        document.getElementById('bgInput').addEventListener('change', function() {
+            if (document.getElementById('textInput').value.trim()) {
+                generateQR();
+            }
+        });
+        
+        document.getElementById('sizeInput').addEventListener('change', function() {
+            if (document.getElementById('textInput').value.trim()) {
+                generateQR();
+            }
+        });
 
         // Tambahkan animasi
         const style = document.createElement('style');
@@ -374,9 +450,11 @@
         `;
         document.head.appendChild(style);
 
-        // Generate default QR
-        document.getElementById('textInput').value = 'https://example.com';
-        generateQR();
+        // AUTO GENERATE dengan contoh
+        window.onload = function() {
+            document.getElementById('textInput').value = 'https://google.com';
+            setTimeout(generateQR, 500);
+        };
     </script>
 </body>
 </html>

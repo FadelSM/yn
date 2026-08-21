@@ -1,136 +1,241 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>QR Studio — Generator QR Code (API)</title>
-<meta name="description" content="Buat QR code custom via API, siap dipindai Google Lens & aplikasi kamera lain." />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Code Generator (Client-Side)</title>
+  
+  <!-- Pustaka QRCode.js via CDN (Pemrosesan langsung di Browser) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: #f8fafc;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 32px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      text-align: center;
+      color: #38bdf8;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    label {
+      font-size: 0.875rem;
+      color: #94a3b8;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: #38bdf8;
+    }
+
+    .color-picker-group {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .color-picker {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #0f172a;
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+    }
+
+    .color-picker input[type="color"] {
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      background: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: #0284c7;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    button:hover {
+      background: #0369a1;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .qr-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #0f172a;
+      border-radius: 16px;
+      padding: 24px;
+      min-height: 240px;
+      border: 1px dashed #334155;
+    }
+
+    /* Memastikan gambar QR terpusat dengan baik */
+    #qrcode img, #qrcode canvas {
+      border-radius: 8px;
+      padding: 10px;
+      background: #ffffff; /* Latar putih bawaan untuk keterbacaan tinggi */
+    }
+
+    .placeholder-text {
+      color: #64748b;
+      font-size: 0.875rem;
+    }
+
+    .download-btn {
+      background: #10b981;
+      display: none;
+      text-decoration: none;
+      text-align: center;
+      padding: 14px;
+      border-radius: 12px;
+      color: #fff;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .download-btn:hover {
+      background: #059669;
+    }
+  </style>
 </head>
 <body>
 
-  <div class="scanline-bg" aria-hidden="true"></div>
+  <div class="card">
+    <h2>QR Code Generator</h2>
 
-  <header class="topbar">
-    <div class="brand">
-      <span class="brand-mark" aria-hidden="true">▚</span>
-      <span class="brand-text">QR<em>STUDIO</em></span>
-    </div>
-    <span class="brand-tag">100% client-side · via API</span>
-  </header>
-
-  <main class="layout">
-
-    <section class="hero">
-      <p class="eyebrow">001 / SCAN-READY QR GENERATOR</p>
-      <h1>Bikin QR code, langsung bisa discan.</h1>
-      <p class="hero-sub">Isi teks atau tautan, atur tampilannya — kode dibuat lewat API QR publik dan berformat standar, jadi bisa langsung dipindai Google Lens atau aplikasi kamera/barcode bawaan HP.</p>
-    </section>
-
-    <div class="workspace">
-
-      <!-- PANEL KONTROL -->
-      <section class="panel controls" aria-label="Pengaturan QR Code">
-
-        <div class="field">
-          <label for="qr-text">Teks atau URL</label>
-          <textarea id="qr-text" rows="3" placeholder="https://contoh.com atau tulisan apa saja…" maxlength="900"></textarea>
-          <div class="field-meta">
-            <span id="char-count">0 / 900</span>
-          </div>
-        </div>
-
-        <div class="field-row">
-          <div class="field">
-            <label for="qr-size">Ukuran <span class="value-tag" id="size-value">320px</span></label>
-            <input type="range" id="qr-size" min="150" max="800" step="10" value="320" />
-          </div>
-          <div class="field">
-            <label for="qr-margin">Quiet zone <span class="value-tag" id="margin-value">2</span></label>
-            <input type="range" id="qr-margin" min="0" max="8" step="1" value="2" />
-          </div>
-        </div>
-
-        <div class="field-row">
-          <div class="field">
-            <label for="qr-dark">Warna kode</label>
-            <div class="color-input">
-              <input type="color" id="qr-dark" value="#0b0e11" />
-              <input type="text" id="qr-dark-hex" value="#0B0E11" maxlength="7" />
-            </div>
-          </div>
-          <div class="field">
-            <label for="qr-light">Warna latar</label>
-            <div class="color-input">
-              <input type="color" id="qr-light" value="#ffffff" />
-              <input type="text" id="qr-light-hex" value="#FFFFFF" maxlength="7" />
-            </div>
-          </div>
-        </div>
-
-        <div class="field">
-          <label for="qr-ecc">Level koreksi error</label>
-          <select id="qr-ecc">
-            <option value="L">L — Rendah (data maksimal)</option>
-            <option value="M" selected>M — Sedang (rekomendasi)</option>
-            <option value="Q">Q — Tinggi</option>
-            <option value="H">H — Tertinggi (tahan cover/logo)</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <span class="label-like">Format output</span>
-          <div class="segmented" role="radiogroup" aria-label="Format output">
-            <button type="button" class="seg-btn is-active" data-format="png" role="radio" aria-checked="true">PNG</button>
-            <button type="button" class="seg-btn" data-format="svg" role="radio" aria-checked="false">SVG</button>
-          </div>
-        </div>
-
-        <button id="generate-btn" class="btn-primary" type="button">
-          <span class="btn-icon" aria-hidden="true">◎</span>
-          Generate QR Code
-        </button>
-
-        <p id="form-error" class="form-error" role="alert" hidden></p>
-      </section>
-
-      <!-- PANEL PREVIEW / VIEWFINDER -->
-      <section class="panel preview" aria-label="Pratinjau QR Code">
-
-        <div class="viewfinder" id="viewfinder">
-          <span class="corner tl"></span>
-          <span class="corner tr"></span>
-          <span class="corner bl"></span>
-          <span class="corner br"></span>
-          <div class="laser" id="laser" aria-hidden="true"></div>
-
-          <div class="qr-slot" id="qr-slot">
-            <p class="qr-placeholder">Isi teks di sebelah kiri, lalu tekan<br><strong>Generate QR Code</strong></p>
-          </div>
-        </div>
-
-        <p id="contrast-warning" class="contrast-warning" hidden>
-          ⚠️ Kontras warna rendah — kode ini mungkin sulit dipindai kamera. Gunakan warna gelap di atas latar terang.
-        </p>
-
-        <div class="preview-actions">
-          <button id="download-btn" class="btn-secondary" type="button" disabled>Unduh</button>
-          <button id="open-btn" class="btn-ghost" type="button" disabled>Buka di tab baru</button>
-        </div>
-
-        <p class="scan-hint" id="scan-hint">Status: <span>menunggu input</span></p>
-      </section>
-
+    <div class="input-group">
+      <label for="text-input">Teks atau URL</label>
+      <input type="text" id="text-input" placeholder="Masukkan URL atau teks di sini...">
     </div>
 
-  </main>
+    <div class="color-picker-group">
+      <div class="color-picker">
+        <label>Warna QR</label>
+        <input type="color" id="color-dark" value="#000000">
+      </div>
+      <div class="color-picker">
+        <label>Background</label>
+        <input type="color" id="color-light" value="#ffffff">
+      </div>
+    </div>
 
-  <footer class="site-footer">
-    <p>100% JavaScript + HTML + CSS di sisi browser — QR dibuat lewat <strong>QR Server API</strong> (api.qrserver.com), format standar sehingga terbaca Google Lens, aplikasi Barcode Scanner, maupun kamera bawaan HP.</p>
-  </footer>
+    <button onclick="generateQR()">Buat QR Code</button>
 
-  <script src="script.js"></script>
+    <div class="qr-container">
+      <div id="qrcode">
+        <span class="placeholder-text">QR Code akan muncul di sini</span>
+      </div>
+    </div>
+
+    <a id="download-link" class="download-btn" download="qrcode.png">Unduh QR Code</a>
+  </div>
+
+  <script>
+    let qrInstance = null;
+
+    function generateQR() {
+      const text = document.getElementById('text-input').value.trim();
+      const colorDark = document.getElementById('color-dark').value;
+      const colorLight = document.getElementById('color-light').value;
+      const qrBox = document.getElementById('qrcode');
+      const downloadBtn = document.getElementById('download-link');
+
+      if (!text) {
+        alert('Silakan masukkan teks atau URL terlebih dahulu!');
+        return;
+      }
+
+      // Bersihkan QR Code sebelumnya
+      qrBox.innerHTML = '';
+
+      // Generate QR Code baru langsung di browser
+      qrInstance = new QRCode(qrBox, {
+        text: text,
+        width: 200,
+        height: 200,
+        colorDark: colorDark,
+        colorLight: colorLight,
+        correctLevel: QRCode.CorrectLevel.H // Level H = Koreksi kesalahan tertinggi (mudah di-scan)
+      });
+
+      // Tunggu render selesai lalu persiapkan tombol unduh
+      setTimeout(() => {
+        const img = qrBox.querySelector('img');
+        const canvas = qrBox.querySelector('canvas');
+
+        if (img && img.src) {
+          downloadBtn.href = img.src;
+          downloadBtn.style.display = 'block';
+        } else if (canvas) {
+          downloadBtn.href = canvas.toDataURL("image/png");
+          downloadBtn.style.display = 'block';
+        }
+      }, 100);
+    }
+  </script>
 </body>
 </html>

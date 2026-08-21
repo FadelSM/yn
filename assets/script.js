@@ -19,11 +19,11 @@ generateBtn.addEventListener('click', () => {
   // Buat QR Code baru
   new QRCode(qrContainer, {
     text: textValue,
-    width: 200,
-    height: 200,
+    width: 250,
+    height: 250,
     colorDark: '#000000',
     colorLight: '#ffffff',
-    correctLevel: QRCode.CorrectLevel.H
+    correctLevel: QRCode.CorrectLevel.L
   });
 
   // Tampilkan container QR & tombol aksi

@@ -135,7 +135,7 @@
     <a id="download-btn" class="download-btn" download="qrcode.png">Unduh Gambar</a>
   </div>
 
-  <script>
+    <script>
     function generateQR() {
       const text = document.getElementById('text-input').value.trim();
       const canvas = document.getElementById('qr-canvas');
@@ -147,22 +147,34 @@
         return;
       }
 
+      // Cari tipe QR paling pas secara otomatis berdasarkan panjang teks
+      let typeNumber = 1;
+      if (text.length > 14) typeNumber = 2;
+      if (text.length > 26) typeNumber = 3;
+      if (text.length > 42) typeNumber = 4;
+      if (text.length > 62) typeNumber = 5;
+      if (text.length > 84) typeNumber = 6;
+      if (text.length > 106) typeNumber = 7;
+      if (text.length > 122) typeNumber = 8;
+      if (text.length > 152) typeNumber = 9;
+      if (text.length > 180) typeNumber = 10;
+
       try {
-        // Panggil engine QR Code murni internal
-        const qr = new QRCode(1, 2); // Error Correction Level 'H' (paling akurat)
+        // Bebas input URL panjang sampai ~200+ karakter tanpa error
+        const qr = new QRCode(typeNumber, 2); 
         qr.addData(text);
         qr.make();
 
         const count = qr.getModuleCount();
         const ctx = canvas.getContext('2d');
-        const size = 200;
+        const size = 260; // Diperbesar sedikit agar titik-titik QR tetap jelas
         const cellSize = Math.floor(size / count);
-        const margin = 10;
+        const margin = 12;
 
-        canvas.width = size + (margin * 2);
-        canvas.height = size + (margin * 2);
+        canvas.width = (cellSize * count) + (margin * 2);
+        canvas.height = (cellSize * count) + (margin * 2);
 
-        // Latar putih terang (penting agar Google Lens mudah baca)
+        // Latar belakang putih bersih
         ctx.fillStyle = '#FFFFFF';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -176,7 +188,6 @@
           }
         }
 
-        // Tampilkan canvas dan siapkan tautan unduh
         placeholder.style.display = 'none';
         canvas.style.display = 'block';
 
@@ -184,9 +195,10 @@
         downloadBtn.style.display = 'block';
 
       } catch (err) {
-        alert("Teks terlalu panjang! Coba teks yang lebih singkat.");
+        alert("Teks masih terlalu panjang untuk kapasitas QR lokal ini. Coba persingkat link kamu!");
       }
     }
   </script>
+
 </body>
 </html>

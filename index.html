@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>QR Studio — Generator QR Code (API)</title>
+<meta name="description" content="Buat QR code custom via API, siap dipindai Google Lens & aplikasi kamera lain." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="scanline-bg" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">▚</span>
+      <span class="brand-text">QR<em>STUDIO</em></span>
+    </div>
+    <span class="brand-tag">100% client-side · via API</span>
+  </header>
+
+  <main class="layout">
+
+    <section class="hero">
+      <p class="eyebrow">001 / SCAN-READY QR GENERATOR</p>
+      <h1>Bikin QR code, langsung bisa discan.</h1>
+      <p class="hero-sub">Isi teks atau tautan, atur tampilannya — kode dibuat lewat API QR publik dan berformat standar, jadi bisa langsung dipindai Google Lens atau aplikasi kamera/barcode bawaan HP.</p>
+    </section>
+
+    <div class="workspace">
+
+      <!-- PANEL KONTROL -->
+      <section class="panel controls" aria-label="Pengaturan QR Code">
+
+        <div class="field">
+          <label for="qr-text">Teks atau URL</label>
+          <textarea id="qr-text" rows="3" placeholder="https://contoh.com atau tulisan apa saja…" maxlength="900"></textarea>
+          <div class="field-meta">
+            <span id="char-count">0 / 900</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="qr-size">Ukuran <span class="value-tag" id="size-value">320px</span></label>
+            <input type="range" id="qr-size" min="150" max="800" step="10" value="320" />
+          </div>
+          <div class="field">
+            <label for="qr-margin">Quiet zone <span class="value-tag" id="margin-value">2</span></label>
+            <input type="range" id="qr-margin" min="0" max="8" step="1" value="2" />
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="qr-dark">Warna kode</label>
+            <div class="color-input">
+              <input type="color" id="qr-dark" value="#0b0e11" />
+              <input type="text" id="qr-dark-hex" value="#0B0E11" maxlength="7" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="qr-light">Warna latar</label>
+            <div class="color-input">
+              <input type="color" id="qr-light" value="#ffffff" />
+              <input type="text" id="qr-light-hex" value="#FFFFFF" maxlength="7" />
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="qr-ecc">Level koreksi error</label>
+          <select id="qr-ecc">
+            <option value="L">L — Rendah (data maksimal)</option>
+            <option value="M" selected>M — Sedang (rekomendasi)</option>
+            <option value="Q">Q — Tinggi</option>
+            <option value="H">H — Tertinggi (tahan cover/logo)</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <span class="label-like">Format output</span>
+          <div class="segmented" role="radiogroup" aria-label="Format output">
+            <button type="button" class="seg-btn is-active" data-format="png" role="radio" aria-checked="true">PNG</button>
+            <button type="button" class="seg-btn" data-format="svg" role="radio" aria-checked="false">SVG</button>
+          </div>
+        </div>
+
+        <button id="generate-btn" class="btn-primary" type="button">
+          <span class="btn-icon" aria-hidden="true">◎</span>
+          Generate QR Code
+        </button>
+
+        <p id="form-error" class="form-error" role="alert" hidden></p>
+      </section>
+
+      <!-- PANEL PREVIEW / VIEWFINDER -->
+      <section class="panel preview" aria-label="Pratinjau QR Code">
+
+        <div class="viewfinder" id="viewfinder">
+          <span class="corner tl"></span>
+          <span class="corner tr"></span>
+          <span class="corner bl"></span>
+          <span class="corner br"></span>
+          <div class="laser" id="laser" aria-hidden="true"></div>
+
+          <div class="qr-slot" id="qr-slot">
+            <p class="qr-placeholder">Isi teks di sebelah kiri, lalu tekan<br><strong>Generate QR Code</strong></p>
+          </div>
+        </div>
+
+        <p id="contrast-warning" class="contrast-warning" hidden>
+          ⚠️ Kontras warna rendah — kode ini mungkin sulit dipindai kamera. Gunakan warna gelap di atas latar terang.
+        </p>
+
+        <div class="preview-actions">
+          <button id="download-btn" class="btn-secondary" type="button" disabled>Unduh</button>
+          <button id="open-btn" class="btn-ghost" type="button" disabled>Buka di tab baru</button>
+        </div>
+
+        <p class="scan-hint" id="scan-hint">Status: <span>menunggu input</span></p>
+      </section>
+
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>100% JavaScript + HTML + CSS di sisi browser — QR dibuat lewat <strong>QR Server API</strong> (api.qrserver.com), format standar sehingga terbaca Google Lens, aplikasi Barcode Scanner, maupun kamera bawaan HP.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -6,27 +6,28 @@ const downloadBtn = document.getElementById('download-btn');
 const copyBtn = document.getElementById('copy-btn');
 
 generateBtn.addEventListener('click', () => {
-  const textValue = textInput.value.trim();
+  let textValue = textInput.value.trim();
 
   if (!textValue) {
     alert('Harap isi teks terlebih dahulu!');
     return;
   }
 
-  // Bersihkan QR Code sebelumnya jika ada
+  // Hapus baris baru/enter berlebih agar tidak merusak format Google Lens
+  textValue = textValue.replace(/\r?\n|\r/g, ' ');
+
   qrContainer.innerHTML = '';
 
-  // Buat QR Code baru
+  // Pakai canvas SVG renderer & Error Correction 'M'
   new QRCode(qrContainer, {
     text: textValue,
-    width: 250,
-    height: 250,
+    width: 280,
+    height: 280,
     colorDark: '#000000',
     colorLight: '#ffffff',
-    correctLevel: QRCode.CorrectLevel.L
+    correctLevel: QRCode.CorrectLevel.M
   });
 
-  // Tampilkan container QR & tombol aksi
   qrWrapper.classList.remove('hidden');
 });
 

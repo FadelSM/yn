@@ -1,497 +1,382 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="img/KSYA.ID Logo.png">
-<title>QR Generator - KSYA.ID</title>
-
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/qr-code-styling/lib/qr-code-styling.js"></script>
-</head>
-
-<body>
-<div class="container">
-
-<h2>QR Generator By KSYA.ID</h2>
-
-<div class="main">
-
-    <!-- KIRI -->
-<div class="left">
-
-    <input id="text" placeholder="Masukkan link / teks">
-
-<div class="help-box">
-    <div class="help-title-col">Gunakan link media sosial/teks biasa atau format yang didukung</div>
-
-    <div class="help-body-col">
-
-    <div class="help-row">
-        <span class="help-title">WhatsApp</span>
-
-        <span class="help-text">
-            Gunakan 
-            <code>
-                https://wa.me/
-                <span class="info-tooltip">
-                    (Kode Negara)
-                    <span class="tooltip-box">
-                        Contoh Indonesia: 62 <br>
-                        Jadi: 628xxxxxxxxxx
-                    </span>
-                </span>
-                8xxxxxxxxxx
-            </code>
-        </span>
-    </div>
-
-        <div class="help-row">
-            <span class="help-title">Instagram</span>
-            <span class="help-text">
-                Gunakan "@username"
-            </span>
-        </div>
-
-        <div class="help-row">
-            <span class="help-title">TikTok</span>
-            <span class="help-text">
-                Gunakan link VT
-            </span>
-        </div>
-
-    </div>
-</div>
-
-    <input id="labelText" placeholder="Contoh: SCAN ME">
-
-    <select id="style">
-        <option value="square">Kotak</option>
-        <option value="dots">Bulat</option>
-    </select>
-
-    <!-- Pilih Logo -->
-    <label class="upload-box">
-    <input type="file" id="logo" hidden onchange="showFileName(this)">
-    <div id="fileName" class="file-name">Belum ada file</div>
-</label>
-
-
-   <div class="btn-group">
-    <button class="btn-download" onclick="download()">Download</button>
-    <button class="btn-save" onclick="saveCurrent()">Save</button>
-</div>
-
-
-
-</div>
-
-    <!-- KANAN -->
-    <div class="right">
-    <div id="qr">
-        <div class="placeholder">QR muncul di sini</div>
-    </div>
-
-    <div class="complexity-box">
-    <div id="complexityText">Complexity: -</div>
-    <div class="bar">
-        <div id="barFill"></div>
-    </div>
-</div>
-
-    <button class="btn-history" onclick="toggleHistory()">Riwayat QR</button>
-</div>
-
-</div>
-
-<div class="history">
-<h3>Riwayat QR</h3>
-<div id="historyList"></div>
-
-</div>
-
-</div>
-
-<script>
-let qr;
-
-function detectType(text) {
-
-    // WhatsApp
-    if (
-        /^\d+$/.test(text) ||
-        text.includes("wa.me") ||
-        text.includes("whatsapp.com")
-    ) {
-        return "wa";
-    }
-
-    // Instagram
-    if (
-        text.includes("instagram.com") ||
-        text.startsWith("@")
-    ) {
-        return "ig";
-    }
-
-    // TikTok
-    if (
-        text.includes("tiktok.com") ||
-        text.includes("vt.tiktok.com")
-    ) {
-        return "tiktok";
-    }
-
-    return "default";
-}
-
-function autoFormat(text) {
-
-    // Nomor otomatis jadi link WA
-    if (/^\d+$/.test(text)) {
-        return "https://wa.me/" + text;
-    }
-
-    // @username otomatis jadi IG
-    if (text.startsWith("@")) {
-        return "https://instagram.com/" + text.replace("@", "");
-    }
-
-    return text;
-}
-
-function getAutoLogo(type) {
-    if (type === "wa") return "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg";
-    if (type === "ig") return "https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png";
-    if (type === "tiktok") return "https://upload.wikimedia.org/wikipedia/en/a/a9/TikTok_logo.svg";
-    return "";
-}
-
-function generate() {
-    let text = document.getElementById("text").value.trim(); //
-    const style = document.getElementById("style").value;
-    const userLogo = document.getElementById("logo").files[0];
-    const label = document.getElementById("labelText").value;
-
-    const qrContainer = document.getElementById("qr");
-
-    //kalau kosong → reset QR
-    if (!text) {
-    qrContainer.innerHTML = '<div class="placeholder">QR muncul di sini</div>';
-    updateComplexity("");
-    qr = null;
-
-    showAlert("QR dihapus", "error"); // 🔥 ini animasi hapus
-    return;
-
-    }
-
-    const rawText = text;
-    const type = detectType(text);
-    text = autoFormat(text);
-
-    let imageURL = userLogo 
-        ? URL.createObjectURL(userLogo) 
-        : getAutoLogo(type);
-
-    qrContainer.innerHTML = "";
-
-    const wrapper = document.createElement("div");
-    wrapper.className = "qr-wrapper";
-
-    const qrBox = document.createElement("div");
-
-    qr = new QRCodeStyling({
-        width: 300,
-        height: 300,
-        data: text,
-        image: imageURL,
-        qrOptions: { errorCorrectionLevel: "H" },
-        dotsOptions: { type: style, color: "#000000" },
-        backgroundOptions: { color: "#ffffff" },
-        imageOptions: { crossOrigin: "anonymous", margin: 8 }
-    });
-
-    updateComplexity(rawText);
-
-    qr.append(qrBox);
-    wrapper.appendChild(qrBox);
-
-    if (label) {
-        const labelEl = document.createElement("div");
-        labelEl.className = "qr-label";
-        labelEl.innerText = label;
-        wrapper.appendChild(labelEl);
-    }
-
-    qrContainer.appendChild(wrapper);
-}
-
-function saveCurrent() {
-    let text = document.getElementById("text").value.trim();
-    let label = document.getElementById("labelText").value;
-
-    if (!text) return showAlert("Isi dulu sebelum save!", "error");
-
-    const canvas = document.querySelector("#qr canvas");
-    if (!canvas) return showAlert("Generate dulu QR nya!", "error");
-
-    const image = canvas.toDataURL();
-
-    saveHistory(text, label, image);
-    showAlert("Berhasil disimpan!");
-}
-
-function download() {
-    const canvas = document.querySelector("#qr canvas"); // 🔥 ambil QR
-
-    if (!canvas) {
-    showAlert("Generate dulu QR nya!", "error");
-    return;
-}
-
-    showAlert("QR berhasil di download!");
-
-    const label = document.getElementById("labelText").value;
-    const text = document.getElementById("text").value;
-    const padding = 30;
-    const radius = 20;
-    const extraHeight = label ? 70 : 20;
-
-    const newCanvas = document.createElement("canvas");
-    const ctx = newCanvas.getContext("2d");
-
-    newCanvas.width = canvas.width + padding * 2;
-    newCanvas.height = canvas.height + padding * 2 + extraHeight;
-
-    function roundRect(x, y, w, h, r) {
-        ctx.beginPath();
-        ctx.moveTo(x + r, y);
-        ctx.lineTo(x + w - r, y);
-        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-        ctx.lineTo(x + w, y + h - r);
-        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-        ctx.lineTo(x + r, y + h);
-        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-        ctx.lineTo(x, y + r);
-        ctx.quadraticCurveTo(x, y, x + r, y);
-        ctx.closePath();
-    }
-
-    // frame
-    ctx.fillStyle = "#ffffff";
-    roundRect(0, 0, newCanvas.width, newCanvas.height, radius);
-    ctx.fill();
-
-    ctx.drawImage(canvas, padding, padding);
-
-    if (label) {
-        ctx.font = "bold 16px sans-serif";
-        ctx.fillStyle = "#111";
-        ctx.textAlign = "center";
-        ctx.fillText(label, newCanvas.width/2, canvas.height + padding + 30);
-    }
-
-    let fileName = label || text || "QR-Code";
-    fileName = fileName.replace(/[^a-z0-9]/gi, "_").toLowerCase();
-
-    const link = document.createElement("a");
-    link.download = fileName + ".png";
-    link.href = newCanvas.toDataURL();
-    link.click();
-}
-
-// Tampilkan nama file yang dipilih
-function showFileName(input) {
-    const fileText = document.getElementById("fileName");
-
-    if (input.files.length > 0) {
-        fileText.innerText = input.files[0].name;
-    } else {
-        fileText.innerText = "Belum ada file";
-    }
-}
-
-// Input 
-document.getElementById("text").addEventListener("input", generate);
-document.getElementById("labelText").addEventListener("input", generate);
-document.getElementById("style").addEventListener("change", generate);
-document.getElementById("logo").addEventListener("change", generate);
-
-// History
-function saveHistory(text, label, image) {
-    let history = JSON.parse(localStorage.getItem("qrHistory")) || [];
-
-    history.unshift({ text, label, image });
-
-    //Batas history
-    history = history.slice(0, 5);
-
-    localStorage.setItem("qrHistory", JSON.stringify(history));
-
-    renderHistory();
-}
-
-function renderHistory() {
-    const history = JSON.parse(localStorage.getItem("qrHistory")) || [];
-    const container = document.getElementById("historyList");
-
-    container.innerHTML = "";
-
-    history.forEach((item, index) => {
-        const box = document.createElement("div");
-        box.className = "history-item";
-
-        // Thumbnail QR (gambar)
-        const img = document.createElement("img");
-        img.src = item.image || "";
-        img.style.width = "80px";
-        img.style.borderRadius = "10px";
-
-        box.appendChild(img);
-
-        // label
-        const label = document.createElement("div");
-        label.className = "history-label";
-        label.innerText = item.label || "QR";
-
-        // tombol hapus
-        const delBtn = document.createElement("div");
-        delBtn.className = "delete-btn";
-        delBtn.innerText = "✕";
-
-        delBtn.onclick = (e) => {
-            e.stopPropagation(); // biar ga ikut klik QR
-            deleteHistory(index);
-        };
-
-        box.appendChild(delBtn);
-        box.appendChild(img);
-        box.appendChild(label);
-
-        // klik load
-        box.onclick = () => {
-            document.getElementById("text").value = item.text;
-            document.getElementById("labelText").value = item.label;
-            generate();
-        };
-
-        container.appendChild(box);
-    });
-}
-
-function deleteHistory(index) {
-    let history = JSON.parse(localStorage.getItem("qrHistory")) || [];
-
-    history.splice(index, 1);
-
-    localStorage.setItem("qrHistory", JSON.stringify(history));
-
-    renderHistory();
-}
-
-function toggleHistory() {
-    const historyBox = document.querySelector(".history");
-
-    if (historyBox.style.display === "none" || historyBox.style.display === "") {
-        historyBox.style.display = "block";
-    } else {
-        historyBox.style.display = "none";
-    }
-}
-
-function createQR(text, style, imageURL, label) {
-    const qrContainer = document.getElementById("qr");
-    qrContainer.innerHTML = "";
-
-    const wrapper = document.createElement("div");
-    wrapper.className = "qr-wrapper";
-
-    const qrBox = document.createElement("div");
-
-    qr = new QRCodeStyling({
-        width: 300,
-        height: 300,
-        data: text,
-        image: imageURL,
-        qrOptions: {
-            errorCorrectionLevel: "H"
-        },
-        dotsOptions: {
-            type: style,
-            color: "#000000"
-        },
-        backgroundOptions: {
-            color: "#ffffff"
-        },
-        imageOptions: {
-            crossOrigin: "anonymous",
-            margin: 8
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-    });
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        h1 span {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .options input[type="color"] {
+            width: 100%;
+            height: 40px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 2px;
+            cursor: pointer;
+        }
+        
+        .options input[type="range"] {
+            width: 100%;
+        }
+        
+        .btn-generate {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-generate:active {
+            transform: translateY(0);
+        }
+        
+        .qr-container {
+            margin-top: 30px;
+            text-align: center;
+            display: none;
+        }
+        
+        .qr-container.show {
+            display: block;
+        }
+        
+        #qrcode {
+            display: inline-block;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .qr-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-action {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .btn-download {
+            background: #10b981;
+        }
+        
+        .btn-download:hover {
+            background: #059669;
+        }
+        
+        .btn-copy {
+            background: #3b82f6;
+        }
+        
+        .btn-copy:hover {
+            background: #2563eb;
+        }
+        
+        .btn-share {
+            background: #8b5cf6;
+        }
+        
+        .btn-share:hover {
+            background: #7c3aed;
+        }
+        
+        .error {
+            color: #ef4444;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .success {
+            color: #10b981;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✨ <span>QR Generator</span></h1>
+        
+        <div class="input-group">
+            <label>📝 Text atau URL</label>
+            <input type="text" id="textInput" placeholder="https://example.com atau teks apapun...">
+        </div>
+        
+        <div class="options">
+            <div>
+                <label>🎨 Warna QR</label>
+                <input type="color" id="colorInput" value="#000000">
+            </div>
+            <div>
+                <label>⬜ Background</label>
+                <input type="color" id="bgInput" value="#ffffff">
+            </div>
+        </div>
+        
+        <div class="options">
+            <div>
+                <label>📏 Ukuran: <span id="sizeLabel">256</span>px</label>
+                <input type="range" id="sizeInput" min="128" max="512" value="256" step="8">
+            </div>
+        </div>
+        
+        <button class="btn-generate" onclick="generateQR()">
+            🚀 Generate QR Code
+        </button>
+        
+        <div id="error" class="error"></div>
+        
+        <div class="qr-container" id="qrContainer">
+            <div id="qrcode"></div>
+            
+            <div class="qr-actions">
+                <button class="btn-action btn-download" onclick="downloadQR()">
+                    ⬇️ Download
+                </button>
+                <button class="btn-action btn-copy" onclick="copyQR()">
+                    📋 Copy
+                </button>
+                <button class="btn-action btn-share" onclick="shareQR()">
+                    📤 Share
+                </button>
+            </div>
+            
+            <div id="message" class="success"></div>
+        </div>
+    </div>
 
-    qr.append(qrBox);
-    wrapper.appendChild(qrBox);
+    <script>
+        let qrCodeInstance = null;
+        let currentQRData = null;
 
-    if (label) {
-        const labelEl = document.createElement("div");
-        labelEl.className = "qr-label";
-        labelEl.innerText = label;
-        wrapper.appendChild(labelEl);
-    }
+        function generateQR() {
+            const text = document.getElementById('textInput').value.trim();
+            const color = document.getElementById('colorInput').value;
+            const bgColor = document.getElementById('bgInput').value;
+            const size = parseInt(document.getElementById('sizeInput').value);
+            
+            const errorDiv = document.getElementById('error');
+            const container = document.getElementById('qrContainer');
+            
+            // Validasi
+            if (!text) {
+                errorDiv.textContent = '⚠️ Masukkan teks atau URL dulu!';
+                container.classList.remove('show');
+                return;
+            }
+            
+            errorDiv.textContent = '';
+            
+            // Hapus QR lama
+            const qrDiv = document.getElementById('qrcode');
+            qrDiv.innerHTML = '';
+            
+            // Generate QR baru
+            qrCodeInstance = new QRCode(qrDiv, {
+                text: text,
+                width: size,
+                height: size,
+                colorDark: color,
+                colorLight: bgColor,
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            currentQRData = text;
+            container.classList.add('show');
+            
+            // Animasi muncul
+            container.style.animation = 'none';
+            setTimeout(() => {
+                container.style.animation = 'fadeIn 0.5s ease';
+            }, 10);
+            
+            document.getElementById('message').textContent = '✅ QR Code berhasil dibuat!';
+        }
 
-    qrContainer.appendChild(wrapper);
-}
+        function downloadQR() {
+            const canvas = document.querySelector('#qrcode canvas');
+            if (!canvas) return;
+            
+            const link = document.createElement('a');
+            link.download = `qr-code-${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            
+            document.getElementById('message').textContent = '✅ QR Code didownload!';
+        }
 
-function updateComplexity(text) {
-    const length = text.length;
+        async function copyQR() {
+            const canvas = document.querySelector('#qrcode canvas');
+            if (!canvas) return;
+            
+            try {
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                await navigator.clipboard.write([
+                    new ClipboardItem({
+                        [blob.type]: blob
+                    })
+                ]);
+                document.getElementById('message').textContent = '✅ QR Code dicopy ke clipboard!';
+            } catch (err) {
+                alert('Copy gagal, coba download saja.');
+            }
+        }
 
-    let level = "";
-    let percent = 0;
-    let color = "";
+        async function shareQR() {
+            const canvas = document.querySelector('#qrcode canvas');
+            if (!canvas) return;
+            
+            try {
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                const file = new File([blob], 'qr-code.png', { type: 'image/png' });
+                
+                if (navigator.share) {
+                    await navigator.share({
+                        title: 'QR Code',
+                        text: `QR Code untuk: ${currentQRData}`,
+                        files: [file]
+                    });
+                } else {
+                    downloadQR();
+                }
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    alert('Share gagal, coba download.');
+                }
+            }
+        }
 
-    if (length === 0) {
-        level = "-";
-        percent = 0;
-        color = "#ccc";
-    } else if (length < 30) {
-        level = "Simple (QR bersih)";
-        percent = 25;
-        color = "#22c55e"; // hijau
-    } else if (length < 80) {
-        level = "Medium";
-        percent = 60;
-        color = "#eab308"; // kuning
-    } else {
-        level = "Complex (QR padat, saran menggunakan shortlink)";
-        percent = 100;
-        color = "#ef4444"; // merah
-    }
+        // Enter key untuk generate
+        document.getElementById('textInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') generateQR();
+        });
 
-    document.getElementById("complexityText").innerText = "Complexity: " + level;
+        // Update ukuran label
+        document.getElementById('sizeInput').addEventListener('input', function() {
+            document.getElementById('sizeLabel').textContent = this.value;
+        });
 
-    const bar = document.getElementById("barFill");
-    bar.style.width = percent + "%";
-    bar.style.background = "linear-gradient(90deg, #22c55e, #eab308, #ef4444)";
-}
+        // Auto-generate saat ada perubahan warna
+        document.getElementById('colorInput').addEventListener('change', generateQR);
+        document.getElementById('bgInput').addEventListener('change', generateQR);
+        document.getElementById('sizeInput').addEventListener('change', generateQR);
 
-//Alert
-function showAlert(message, type = "success") {
-    const box = document.getElementById("alertBox");
+        // Tambahkan animasi
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
 
-    box.innerText = message;
-    box.className = "alert-box show";
-
-    if (type === "error") box.classList.add("alert-error");
-    else box.classList.add("alert-success");
-
-    setTimeout(() => {
-        box.classList.remove("show");
-    }, 2000);
-}
-</script>
-
-<div id="alertBox" class="alert-box"></div>
-
+        // Generate default QR
+        document.getElementById('textInput').value = 'https://example.com';
+        generateQR();
+    </script>
 </body>
 </html>

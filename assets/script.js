@@ -1,8 +1,9 @@
 const textInput = document.getElementById('text-input');
 const generateBtn = document.getElementById('generate-btn');
+const qrWrapper = document.getElementById('qrcode-wrapper');
 const qrContainer = document.getElementById('qrcode');
-
-let qrCodeInstance = null;
+const downloadBtn = document.getElementById('download-btn');
+const copyBtn = document.getElementById('copy-btn');
 
 generateBtn.addEventListener('click', () => {
   const textValue = textInput.value.trim();
@@ -15,8 +16,8 @@ generateBtn.addEventListener('click', () => {
   // Bersihkan QR Code sebelumnya jika ada
   qrContainer.innerHTML = '';
 
-  // Buat QR Code baru dari teks input
-  qrCodeInstance = new QRCode(qrContainer, {
+  // Buat QR Code baru
+  new QRCode(qrContainer, {
     text: textValue,
     width: 200,
     height: 200,
@@ -24,4 +25,56 @@ generateBtn.addEventListener('click', () => {
     colorLight: '#ffffff',
     correctLevel: QRCode.CorrectLevel.H
   });
+
+  // Tampilkan container QR & tombol aksi
+  qrWrapper.classList.remove('hidden');
+});
+
+// Fitur Download QR Code
+downloadBtn.addEventListener('click', () => {
+  const img = qrContainer.querySelector('img');
+  const canvas = qrContainer.querySelector('canvas');
+
+  let imageSrc = '';
+  if (img && img.src) {
+    imageSrc = img.src;
+  } else if (canvas) {
+    imageSrc = canvas.toDataURL('image/png');
+  }
+
+  if (imageSrc) {
+    const link = document.createElement('a');
+    link.href = imageSrc;
+    link.download = 'qrcode.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } else {
+    alert('QR Code belum siap untuk diunduh!');
+  }
+});
+
+// Fitur Salin/Copy Gambar QR Code
+copyBtn.addEventListener('click', async () => {
+  const canvas = qrContainer.querySelector('canvas');
+
+  if (!canvas) {
+    alert('QR Code belum dibuat!');
+    return;
+  }
+
+  try {
+    canvas.toBlob(async (blob) => {
+      if (!blob) {
+        alert('Gagal mengambil gambar!');
+        return;
+      }
+      const item = new ClipboardItem({ 'image/png': blob });
+      await navigator.clipboard.write([item]);
+      alert('Gambar QR Code berhasil disalin ke clipboard!');
+    });
+  } catch (err) {
+    console.error(err);
+    alert('Browser tidak mendukung fitur salin gambar secara langsung.');
+  }
 });
